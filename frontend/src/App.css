@@ -1,34 +1,111 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+body {
+  font-family: 'Lato', sans-serif;
+  color: #333333;
+  background-color: #FFFFFF;
+  line-height: 1.6;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  color: #000000;
+  font-weight: 600;
+  letter-spacing: -0.025em;
 }
 
-.App-link {
-    color: #61dafb;
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font-family: 'Lato', sans-serif;
+}
+
+.btn-primary {
+  background-color: #C5A059;
+  color: white;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #B08D45;
+}
+
+.btn-secondary {
+  border: 1px solid #C5A059;
+  color: #C5A059;
+  background: transparent;
+  padding: 0.75rem 2rem;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #C5A059;
+  color: white;
+}
+
+.btn-whatsapp {
+  background-color: #25D366;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 9999px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+  background-color: #128C7E;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
 }
