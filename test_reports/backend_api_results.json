@@ -1,0 +1,155 @@
+{
+  "summary": {
+    "total_tests": 24,
+    "passed_tests": 18,
+    "failed_tests": 6,
+    "success_rate": 75.0
+  },
+  "test_results": [
+    {
+      "test": "Admin Login - Valid Credentials",
+      "status": "PASS",
+      "details": "Status: 200, Token received",
+      "timestamp": "2025-12-25T19:02:58.230158"
+    },
+    {
+      "test": "Admin Token Stored",
+      "status": "PASS",
+      "details": "Token saved for subsequent tests",
+      "timestamp": "2025-12-25T19:02:58.230776"
+    },
+    {
+      "test": "Admin Login - Invalid Credentials",
+      "status": "PASS",
+      "details": "Status: 401",
+      "timestamp": "2025-12-25T19:02:58.499463"
+    },
+    {
+      "test": "Admin Login - Non-existent Email",
+      "status": "PASS",
+      "details": "Status: 401",
+      "timestamp": "2025-12-25T19:02:58.541512"
+    },
+    {
+      "test": "Get Admin Stats - With Auth",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-25T19:02:58.588314"
+    },
+    {
+      "test": "Admin Stats Fields",
+      "status": "PASS",
+      "details": "All required fields present: ['total_revenue', 'total_orders', 'total_products', 'pending_orders', 'recent_orders']",
+      "timestamp": "2025-12-25T19:02:58.588934"
+    },
+    {
+      "test": "Get Admin Stats - No Auth",
+      "status": "FAIL",
+      "details": "Status: 403 (Expected: 401), Error: Not authenticated",
+      "timestamp": "2025-12-25T19:02:58.631186"
+    },
+    {
+      "test": "Create Product - With Auth",
+      "status": "PASS",
+      "details": "Status: 200, ID: 8ab7ff5f...",
+      "timestamp": "2025-12-25T19:02:58.677719"
+    },
+    {
+      "test": "Create Product - No Auth",
+      "status": "FAIL",
+      "details": "Status: 403 (Expected: 401), Error: Not authenticated",
+      "timestamp": "2025-12-25T19:02:58.716420"
+    },
+    {
+      "test": "Update Product - With Auth",
+      "status": "PASS",
+      "details": "Status: 200, ID: 8ab7ff5f...",
+      "timestamp": "2025-12-25T19:02:58.764847"
+    },
+    {
+      "test": "Update Product - No Auth",
+      "status": "FAIL",
+      "details": "Status: 403 (Expected: 401), Error: Not authenticated",
+      "timestamp": "2025-12-25T19:02:58.797305"
+    },
+    {
+      "test": "Delete Product - With Auth",
+      "status": "PASS",
+      "details": "Status: 200, ID: 8ab7ff5f...",
+      "timestamp": "2025-12-25T19:02:58.839075"
+    },
+    {
+      "test": "Delete Non-existent Product",
+      "status": "PASS",
+      "details": "Status: 404",
+      "timestamp": "2025-12-25T19:02:58.873846"
+    },
+    {
+      "test": "Delete Product - No Auth",
+      "status": "FAIL",
+      "details": "Status: 403 (Expected: 401), Error: Not authenticated",
+      "timestamp": "2025-12-25T19:02:58.914476"
+    },
+    {
+      "test": "Get All Orders - With Auth",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-25T19:02:58.949835"
+    },
+    {
+      "test": "Get All Orders - No Auth",
+      "status": "FAIL",
+      "details": "Status: 403 (Expected: 401), Error: Not authenticated",
+      "timestamp": "2025-12-25T19:02:58.993598"
+    },
+    {
+      "test": "Get Orders by Status",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-25T19:02:59.076105"
+    },
+    {
+      "test": "Get Orders with Pagination",
+      "status": "PASS",
+      "details": "Status: 200",
+      "timestamp": "2025-12-25T19:02:59.112766"
+    },
+    {
+      "test": "Get Products for Order",
+      "status": "PASS",
+      "details": "Status: 200, Items: 0",
+      "timestamp": "2025-12-25T19:02:59.149913"
+    },
+    {
+      "test": "Order Status Update",
+      "status": "FAIL",
+      "details": "No products available to create order",
+      "timestamp": "2025-12-25T19:02:59.150555"
+    },
+    {
+      "test": "Get All Products",
+      "status": "PASS",
+      "details": "Status: 200, Items: 0",
+      "timestamp": "2025-12-25T19:02:59.190190"
+    },
+    {
+      "test": "Get Categories",
+      "status": "PASS",
+      "details": "Status: 200, Items: 3",
+      "timestamp": "2025-12-25T19:02:59.225601"
+    },
+    {
+      "test": "Invalid Endpoint",
+      "status": "PASS",
+      "details": "Status: 404",
+      "timestamp": "2025-12-25T19:02:59.261816"
+    },
+    {
+      "test": "Create Order with Invalid Data",
+      "status": "PASS",
+      "details": "Status: 422",
+      "timestamp": "2025-12-25T19:02:59.302512"
+    }
+  ],
+  "timestamp": "2025-12-25T19:02:59.303314"
+}
