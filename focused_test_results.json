@@ -1,0 +1,95 @@
+{
+  "test_results": [
+    {
+      "test": "Admin Login",
+      "status": "PASS",
+      "details": "JWT token received, admin: admin@alveera.com",
+      "timestamp": "2025-12-25T19:04:04.852235"
+    },
+    {
+      "test": "Admin Profile",
+      "status": "PASS",
+      "details": "Profile retrieved: admin@alveera.com",
+      "timestamp": "2025-12-25T19:04:04.892532"
+    },
+    {
+      "test": "Invalid Credentials",
+      "status": "PASS",
+      "details": "Status: 401",
+      "timestamp": "2025-12-25T19:04:05.172085"
+    },
+    {
+      "test": "Admin Stats",
+      "status": "PASS",
+      "details": "Revenue: 0.0, Orders: 0, Products: 0",
+      "timestamp": "2025-12-25T19:04:05.223761"
+    },
+    {
+      "test": "Create Product (Auth)",
+      "status": "PASS",
+      "details": "Product created: 61ce905d...",
+      "timestamp": "2025-12-25T19:04:05.269211"
+    },
+    {
+      "test": "Create Product (No Auth)",
+      "status": "PASS",
+      "details": "Status: 403",
+      "timestamp": "2025-12-25T19:04:05.313434"
+    },
+    {
+      "test": "Update Product (Auth)",
+      "status": "PASS",
+      "details": "Product updated: 61ce905d...",
+      "timestamp": "2025-12-25T19:04:05.354009"
+    },
+    {
+      "test": "Update Product (No Auth)",
+      "status": "PASS",
+      "details": "Status: 403",
+      "timestamp": "2025-12-25T19:04:05.390875"
+    },
+    {
+      "test": "Delete Product (Auth)",
+      "status": "PASS",
+      "details": "Product deleted: 61ce905d...",
+      "timestamp": "2025-12-25T19:04:05.468055"
+    },
+    {
+      "test": "Delete Product (No Auth)",
+      "status": "PASS",
+      "details": "Status: 403",
+      "timestamp": "2025-12-25T19:04:05.507385"
+    },
+    {
+      "test": "Create Order with Snapshots",
+      "status": "PASS",
+      "details": "Order created with product snapshots: Order Test Saree",
+      "timestamp": "2025-12-25T19:04:05.580364"
+    },
+    {
+      "test": "Get Admin Orders",
+      "status": "PASS",
+      "details": "Retrieved 1 orders, total: 1",
+      "timestamp": "2025-12-25T19:04:05.662333"
+    },
+    {
+      "test": "Update Order Status",
+      "status": "PASS",
+      "details": "Status updated to: confirmed",
+      "timestamp": "2025-12-25T19:04:05.705182"
+    },
+    {
+      "test": "Products Lightweight",
+      "status": "PASS",
+      "details": "No products to check (empty response)",
+      "timestamp": "2025-12-25T19:04:05.786526"
+    },
+    {
+      "test": "Products with Description",
+      "status": "PASS",
+      "details": "No products to check",
+      "timestamp": "2025-12-25T19:04:05.826047"
+    }
+  ],
+  "timestamp": "2025-12-25T19:04:05.827126"
+}
