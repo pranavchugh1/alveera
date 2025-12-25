@@ -1,0 +1,177 @@
+{
+  "brand_identity": {
+    "name": "ALVEERA ETHNIC ALLURE",
+    "vibe": "Royal Minimalism",
+    "core_values": ["Luxury", "Tradition", "Elegance", "Majesty"],
+    "emotional_tone": "Sophisticated, Trustworthy, Timeless"
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Playfair Display, serif",
+      "weights": ["400", "600", "700"],
+      "usage": "All section titles, hero text, and product names. Use italic variant for emphasis.",
+      "letter_spacing": "tracking-tight"
+    },
+    "body": {
+      "font_family": "Lato, sans-serif",
+      "weights": ["300", "400", "700"],
+      "usage": "Product descriptions, navigation, buttons, and long-form text.",
+      "letter_spacing": "tracking-wide"
+    }
+  },
+  "colors": {
+    "primary": {
+      "hex": "#C5A059",
+      "name": "Metallic Bronze",
+      "usage": "CTAs, borders, icons, active states"
+    },
+    "background": {
+      "hex": "#FFFFFF",
+      "name": "Pure White",
+      "usage": "Main page background, card backgrounds"
+    },
+    "text": {
+      "primary": "#333333",
+      "secondary": "#666666",
+      "header": "#000000",
+      "name": "Charcoal & Deep Black"
+    },
+    "accent": {
+      "hex": "#F9F5F0",
+      "name": "Royal Cream",
+      "usage": "Subtle section backgrounds, hover states"
+    },
+    "utility": {
+      "success": "#10B981",
+      "error": "#EF4444",
+      "whatsapp": "#25D366"
+    }
+  },
+  "visual_enhancers": {
+    "borders": "1px solid #E5E5E5 (default), 1px solid #C5A059 (active/hover)",
+    "shadows": "0 4px 20px rgba(0, 0, 0, 0.05) (soft ambient)",
+    "radius": "rounded-none (sharp edges for royal feel) or rounded-sm (2px)",
+    "glassmorphism": "bg-white/80 backdrop-blur-md border-b border-white/20",
+    "textures": "Subtle grain overlay on cream backgrounds to add depth without clutter"
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#C5A059] text-white hover:bg-[#B08D45] rounded-none px-8 py-3 uppercase tracking-widest font-bold text-xs transition-all duration-300",
+      "secondary": "border border-[#C5A059] text-[#C5A059] hover:bg-[#C5A059] hover:text-white rounded-none px-8 py-3 uppercase tracking-widest font-bold text-xs transition-all duration-300",
+      "whatsapp": "bg-[#25D366] text-white hover:bg-[#128C7E] rounded-full px-6 py-2 flex items-center gap-2 font-medium shadow-lg hover:shadow-xl transition-all"
+    },
+    "cards": {
+      "product": "group relative bg-white border border-transparent hover:border-[#C5A059]/30 transition-all duration-300 p-4",
+      "feature": "bg-[#F9F5F0] p-8 text-center hover:shadow-lg transition-all duration-500"
+    },
+    "inputs": {
+      "style": "border-b border-gray-300 focus:border-[#C5A059] outline-none bg-transparent px-0 py-2 rounded-none transition-colors placeholder:text-gray-400"
+    }
+  },
+  "grids": {
+    "product_grid": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12",
+    "editorial_grid": "grid grid-cols-1 md:grid-cols-12 gap-4 auto-rows-[minmax(200px,auto)]",
+    "bento_grid": "grid grid-cols-1 md:grid-cols-3 gap-4"
+  },
+  "layouts": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "section_spacing": "py-16 md:py-24 lg:py-32",
+    "hero": "h-[90vh] w-full relative flex items-center justify-center overflow-hidden"
+  },
+  "motion": {
+    "library": "framer-motion",
+    "transitions": {
+      "default": "ease-out duration-300",
+      "slow": "ease-out duration-700"
+    },
+    "animations": {
+      "fade_up": {
+        "initial": { "opacity": 0, "y": 20 },
+        "whileInView": { "opacity": 1, "y": 0 },
+        "viewport": { "once": true }
+      },
+      "image_reveal": {
+        "initial": { "scale": 1.1, "opacity": 0 },
+        "animate": { "scale": 1, "opacity": 1 },
+        "transition": { "duration": 1.5 }
+      }
+    }
+  },
+  "media": {
+    "image_style": "High contrast, editorial cropping. Ensure product images have pure white or neutral backgrounds.",
+    "aspect_ratios": {
+      "product": "aspect-[3/4]",
+      "hero": "aspect-[16/9] or h-screen",
+      "instagram": "aspect-square"
+    }
+  },
+  "image_urls": {
+    "hero": [
+      {
+        "url": "https://images.unsplash.com/photo-1654764745869-545a2316a169?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBpbmRpYW4lMjBzYXJlZSUyMG1vZGVsJTIwZWRpdG9yaWFsJTIwZmFzaGlvbnxlbnwwfHx8fDE3NjY2ODU2NzN8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Elegant woman in ethnic wear leaning against wall - Hero Slide 1"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1757598077205-69a927f0240f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBpbmRpYW4lMjBzYXJlZSUyMG1vZGVsJTIwZWRpdG9yaWFsJTIwZmFzaGlvbnxlbnwwfHx8fDE3NjY2ODU2NzN8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Bride in ornate traditional attire - Hero Slide 2"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1638964327749-53436bcccdca?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjBpbmRpYW4lMjBzYXJlZSUyMG1vZGVsJTIwZWRpdG9yaWFsJTIwZmFzaGlvbnxlbnwwfHx8fDE3NjY2ODU2NzN8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Woman in red and gold bridal wear - Hero Slide 3"
+      }
+    ],
+    "textures": [
+      {
+        "url": "https://images.unsplash.com/photo-1700547949736-024ad8cb56cd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwxfHxnb2xkJTIwc2lsayUyMGZhYnJpYyUyMHRleHR1cmUlMjBjbG9zZSUyMHVwfGVufDB8fHx8MTc2NjY4NTY3NHww&ixlib=rb-4.1.0&q=85",
+        "description": "Gold silk fabric texture - Background accents"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1650026857159-3cc0003a609e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwyfHxnb2xkJTIwc2lsayUyMGZhYnJpYyUyMHRleHR1cmUlMjBjbG9zZSUyMHVwfGVufDB8fHx8MTc2NjY4NTY3NHww&ixlib=rb-4.1.0&q=85",
+        "description": "Gold and silver fabric close up - Banner background"
+      }
+    ],
+    "products": [
+      {
+        "url": "https://images.unsplash.com/photo-1589095053205-8fc842336f4a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjB3ZWRkaW5nJTIwamV3ZWxyeSUyMGdvbGQlMjBtaW5pbWFsaXN0fGVufDB8fHx8MTc2NjY4NTY3Nnww&ixlib=rb-4.1.0&q=85",
+        "description": "Gold necklace - Accessory category"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1606293926249-ed22e446d476?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwyfHxpbmRpYW4lMjB3ZWRkaW5nJTIwamV3ZWxyeSUyMGdvbGQlMjBtaW5pbWFsaXN0fGVufDB8fHx8MTc2NjY4NTY3Nnww&ixlib=rb-4.1.0&q=85",
+        "description": "Traditional bangles - Accessory category"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Implement a 'Royal Minimalism' aesthetic: generous whitespace, sharp borders, and elegant typography.",
+    "Use 'Playfair Display' for all headings to convey luxury.",
+    "Use 'Lato' for body text to ensure readability.",
+    "Primary color #C5A059 should be used sparingly for high-impact elements (buttons, active states).",
+    "Ensure all product images are displayed in a clean grid with ample spacing.",
+    "Implement the 'Inquire via WhatsApp' button prominently on product pages.",
+    "Use the provided image URLs for the Hero slider and category backgrounds.",
+    "Do not use gradients for backgrounds; stick to solid white or subtle cream (#F9F5F0).",
+    "Ensure the site is fully responsive and mobile-first.",
+    "Use Shadcn UI components but override styles to match the 'Royal' theme (remove rounded corners, add gold borders).",
+    "Add 'data-testid' to all interactive elements."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use sonner for toasts"
+  ]
+}
