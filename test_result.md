@@ -148,7 +148,7 @@ backend:
         comment: "POST /api/products, PUT /api/products/{id}, DELETE /api/products/{id} all require Bearer token"
       - working: true
         agent: "testing"
-        comment: "✅ TESTED: All protected product CRUD operations working correctly. POST /api/products creates products with auth, PUT updates products, DELETE removes products. All endpoints properly reject requests without Bearer token (403 status). Authorization working as expected."
+        comment: "All CRUD operations properly protected with Bearer token authentication"
 
   - task: "Admin Orders Management"
     implemented: true
