@@ -165,6 +165,54 @@ backend:
         agent: "testing"
         comment: "✅ TESTED: Order management fully functional. POST /api/orders creates orders with product snapshots (product_name, product_image, product_price). GET /api/admin/orders returns paginated orders with proper structure. PUT /api/admin/orders/{id}/status updates order status correctly. Product snapshot feature working as designed."
 
+  - task: "Admin Profile (Session Validation)"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/admin/me endpoint validates JWT and returns admin profile correctly"
+
+  - task: "Database Indexes"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "create_indexes() function runs on startup - Products (category, price, unique design_no), Orders (compound created_at+status), Admins (unique email)"
+
+  - task: "Product Projection Optimization"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "GET /products excludes description by default for lightweight list view. Use include_description=true for full details"
+
+  - task: "Order Product Snapshots"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Order items now include product_name, product_image, product_price snapshots at time of purchase"
+
 frontend:
   - task: "Admin Login Page"
     implemented: true
