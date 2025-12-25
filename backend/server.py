@@ -42,6 +42,43 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # =============================================================================
+# Database Indexes - Runs on startup for performance optimization
+# =============================================================================
+
+async def create_indexes():
+    """
+    Create MongoDB indexes for optimal query performance.
+    This function runs once on application startup.
+    
+    Indexes created:
+    - Products: category, price, unique design_no
+    - Orders: compound index on (created_at desc, status) for dashboard sorting
+    - Admins: unique email for fast authentication lookups
+    """
+    try:
+        # Products indexes
+        await db.products.create_index("category")
+        await db.products.create_index("price")
+        await db.products.create_index("design_no", unique=True, sparse=True)
+        await db.products.create_index("name")  # For search
+        logger.info("Products indexes created successfully")
+        
+        # Orders indexes - compound index for fast dashboard queries
+        await db.orders.create_index([("created_at", -1), ("status", 1)])
+        await db.orders.create_index("status")  # For filtering
+        await db.orders.create_index("customer_email")  # For customer lookup
+        logger.info("Orders indexes created successfully")
+        
+        # Admins indexes
+        await db.admins.create_index("email", unique=True)
+        logger.info("Admins indexes created successfully")
+        
+        logger.info("All database indexes created/verified successfully")
+    except Exception as e:
+        logger.error(f"Error creating indexes: {e}")
+        # Don't raise - indexes are for optimization, app should still work
+
+# =============================================================================
 # Models
 # =============================================================================
 
