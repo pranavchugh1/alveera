@@ -499,6 +499,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database indexes on application startup."""
+    logger.info("Application starting up...")
+    await create_indexes()
+    logger.info("Application startup complete")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
