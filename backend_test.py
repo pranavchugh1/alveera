@@ -77,6 +77,330 @@ class ECommerceAPITester:
             self.log_test(name, False, f"Error: {str(e)}")
             return False, {}
 
+    def test_admin_authentication(self):
+        """Test admin authentication endpoints"""
+        print("\n🔍 Testing Admin Authentication...")
+        
+        # Test admin login with valid credentials
+        login_data = {
+            "email": "admin@alveera.com",
+            "password": "Admin123!"
+        }
+        
+        success, response = self.run_test(
+            "Admin Login - Valid Credentials",
+            "POST",
+            "admin/login",
+            200,
+            data=login_data
+        )
+        
+        if success and 'access_token' in response:
+            self.admin_token = response['access_token']
+            self.log_test("Admin Token Stored", True, "Token saved for subsequent tests")
+        else:
+            self.log_test("Admin Token Storage", False, "Failed to get admin token")
+            return False
+        
+        # Test admin login with invalid credentials
+        invalid_login = {
+            "email": "admin@alveera.com",
+            "password": "WrongPassword"
+        }
+        
+        self.run_test(
+            "Admin Login - Invalid Credentials",
+            "POST",
+            "admin/login",
+            401,
+            data=invalid_login
+        )
+        
+        # Test admin login with non-existent email
+        invalid_email = {
+            "email": "nonexistent@alveera.com",
+            "password": "Admin123!"
+        }
+        
+        self.run_test(
+            "Admin Login - Non-existent Email",
+            "POST",
+            "admin/login",
+            401,
+            data=invalid_email
+        )
+        
+        return True
+
+    def test_admin_stats(self):
+        """Test admin stats endpoint"""
+        print("\n🔍 Testing Admin Stats...")
+        
+        if not self.admin_token:
+            self.log_test("Admin Stats", False, "No admin token available")
+            return
+        
+        # Test admin stats with valid token
+        success, stats = self.run_test(
+            "Get Admin Stats - With Auth",
+            "GET",
+            "admin/stats",
+            200,
+            auth_required=True
+        )
+        
+        if success and stats:
+            # Verify required fields are present
+            required_fields = ['total_revenue', 'total_orders', 'total_products', 'pending_orders', 'recent_orders']
+            missing_fields = [field for field in required_fields if field not in stats]
+            
+            if not missing_fields:
+                self.log_test("Admin Stats Fields", True, f"All required fields present: {required_fields}")
+            else:
+                self.log_test("Admin Stats Fields", False, f"Missing fields: {missing_fields}")
+        
+        # Test admin stats without auth token
+        self.run_test(
+            "Get Admin Stats - No Auth",
+            "GET",
+            "admin/stats",
+            401
+        )
+
+    def test_protected_product_crud(self):
+        """Test protected product CRUD operations"""
+        print("\n🔍 Testing Protected Product CRUD...")
+        
+        if not self.admin_token:
+            self.log_test("Protected Product CRUD", False, "No admin token available")
+            return None
+        
+        # Test create product with auth
+        test_product = {
+            "design_no": "TEST001",
+            "name": "Test Saree",
+            "description": "A beautiful test saree for API testing",
+            "price": 2999.99,
+            "material": "Silk",
+            "color": "Red",
+            "image_url": "https://example.com/test-saree.jpg",
+            "category": "festive"
+        }
+        
+        success, product = self.run_test(
+            "Create Product - With Auth",
+            "POST",
+            "products",
+            200,
+            data=test_product,
+            auth_required=True
+        )
+        
+        product_id = None
+        if success and product:
+            product_id = product.get('id')
+        
+        # Test create product without auth
+        self.run_test(
+            "Create Product - No Auth",
+            "POST",
+            "products",
+            401,
+            data=test_product
+        )
+        
+        if product_id:
+            # Test update product with auth
+            update_data = {
+                "name": "Updated Test Saree",
+                "price": 3499.99
+            }
+            
+            self.run_test(
+                "Update Product - With Auth",
+                "PUT",
+                f"products/{product_id}",
+                200,
+                data=update_data,
+                auth_required=True
+            )
+            
+            # Test update product without auth
+            self.run_test(
+                "Update Product - No Auth",
+                "PUT",
+                f"products/{product_id}",
+                401,
+                data=update_data
+            )
+            
+            # Test delete product with auth
+            self.run_test(
+                "Delete Product - With Auth",
+                "DELETE",
+                f"products/{product_id}",
+                200,
+                auth_required=True
+            )
+            
+            # Test delete non-existent product
+            self.run_test(
+                "Delete Non-existent Product",
+                "DELETE",
+                "products/non-existent-id",
+                404,
+                auth_required=True
+            )
+        
+        # Test delete product without auth
+        self.run_test(
+            "Delete Product - No Auth",
+            "DELETE",
+            "products/some-id",
+            401
+        )
+        
+        return product_id
+
+    def test_admin_orders(self):
+        """Test admin orders management"""
+        print("\n🔍 Testing Admin Orders Management...")
+        
+        if not self.admin_token:
+            self.log_test("Admin Orders", False, "No admin token available")
+            return None
+        
+        # Test get all orders with auth
+        success, orders_response = self.run_test(
+            "Get All Orders - With Auth",
+            "GET",
+            "admin/orders",
+            200,
+            auth_required=True
+        )
+        
+        # Test get orders without auth
+        self.run_test(
+            "Get All Orders - No Auth",
+            "GET",
+            "admin/orders",
+            401
+        )
+        
+        # Test get orders with status filter
+        self.run_test(
+            "Get Orders by Status",
+            "GET",
+            "admin/orders",
+            200,
+            params={"status": "pending"},
+            auth_required=True
+        )
+        
+        # Test get orders with pagination
+        self.run_test(
+            "Get Orders with Pagination",
+            "GET",
+            "admin/orders",
+            200,
+            params={"limit": 10, "offset": 0},
+            auth_required=True
+        )
+        
+        return orders_response.get('orders', []) if success else []
+
+    def test_order_status_update(self):
+        """Test order status update functionality"""
+        print("\n🔍 Testing Order Status Update...")
+        
+        if not self.admin_token:
+            self.log_test("Order Status Update", False, "No admin token available")
+            return
+        
+        # First create an order using public endpoint
+        # Get a product first
+        success, products = self.run_test(
+            "Get Products for Order",
+            "GET",
+            "products",
+            200
+        )
+        
+        if not success or not products:
+            self.log_test("Order Status Update", False, "No products available to create order")
+            return
+        
+        product_id = products[0]['id']
+        
+        # Create order
+        order_data = {
+            "customer_name": "Admin Test Customer",
+            "customer_email": "admintest@example.com",
+            "customer_phone": "+91XXXXXXXXXX",
+            "items": [
+                {
+                    "product_id": product_id,
+                    "quantity": 1
+                }
+            ],
+            "total": 2999.99,
+            "payment_method": "stripe"
+        }
+        
+        success, order = self.run_test(
+            "Create Order for Status Update",
+            "POST",
+            "orders",
+            200,
+            data=order_data
+        )
+        
+        if success and order:
+            order_id = order['id']
+            
+            # Test update order status with auth
+            status_update = {"status": "confirmed"}
+            
+            self.run_test(
+                "Update Order Status - With Auth",
+                "PUT",
+                f"admin/orders/{order_id}/status",
+                200,
+                data=status_update,
+                auth_required=True
+            )
+            
+            # Test update order status without auth
+            self.run_test(
+                "Update Order Status - No Auth",
+                "PUT",
+                f"admin/orders/{order_id}/status",
+                401,
+                data=status_update
+            )
+            
+            # Test update with invalid status
+            invalid_status = {"status": "invalid_status"}
+            
+            self.run_test(
+                "Update Order Status - Invalid Status",
+                "PUT",
+                f"admin/orders/{order_id}/status",
+                400,
+                data=invalid_status,
+                auth_required=True
+            )
+            
+            # Test update non-existent order
+            self.run_test(
+                "Update Non-existent Order Status",
+                "PUT",
+                "admin/orders/non-existent-id/status",
+                404,
+                data=status_update,
+                auth_required=True
+            )
+
     def test_products_api(self):
         """Test products API endpoints"""
         print("\n🔍 Testing Products API...")
