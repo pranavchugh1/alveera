@@ -490,12 +490,19 @@ async def get_all_orders(
     offset: int = Query(default=0, ge=0),
     current_admin: dict = Depends(get_current_admin)
 ):
-    """Get all orders with optional filtering (admin only)."""
+    """
+    Get all orders with optional filtering (admin only).
+    
+    Optimization: Orders now include product snapshots (name, image, price)
+    embedded at purchase time, eliminating N+1 query problems.
+    Uses compound index (created_at DESC, status) for efficient sorting.
+    """
     query = {}
     if status:
         query["status"] = status
     
     total = await db.orders.count_documents(query)
+    # Uses compound index for efficient sorting
     orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
     
     for order in orders:
