@@ -443,20 +443,30 @@ async def get_order(order_id: str):
 
 @api_router.get("/admin/stats", response_model=AdminStats)
 async def get_admin_stats(current_admin: dict = Depends(get_current_admin)):
-    """Get dashboard statistics (admin only)."""
+    """
+    Get dashboard statistics (admin only).
+    
+    Optimized using MongoDB aggregation for revenue calculation
+    instead of fetching all documents.
+    """
     
     # Total products
     total_products = await db.products.count_documents({})
     
-    # Total orders and revenue
-    orders = await db.orders.find({}, {"_id": 0}).to_list(10000)
-    total_orders = len(orders)
-    total_revenue = sum(order.get("total", 0) for order in orders)
+    # Total orders count
+    total_orders = await db.orders.count_documents({})
+    
+    # Total revenue using aggregation pipeline (efficient for large datasets)
+    revenue_pipeline = [
+        {"$group": {"_id": None, "total_revenue": {"$sum": "$total"}}}
+    ]
+    revenue_result = await db.orders.aggregate(revenue_pipeline).to_list(1)
+    total_revenue = revenue_result[0]["total_revenue"] if revenue_result else 0.0
     
     # Pending orders count
     pending_orders = await db.orders.count_documents({"status": "pending"})
     
-    # Recent orders (last 10)
+    # Recent orders (last 10) - uses compound index (created_at, status)
     recent_orders_cursor = db.orders.find({}, {"_id": 0}).sort("created_at", -1).limit(10)
     recent_orders = await recent_orders_cursor.to_list(10)
     
