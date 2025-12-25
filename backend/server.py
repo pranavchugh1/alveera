@@ -261,8 +261,15 @@ async def get_products(
     color: Optional[str] = None,
     search: Optional[str] = None,
     min_price: Optional[float] = None,
-    max_price: Optional[float] = None
+    max_price: Optional[float] = None,
+    include_description: bool = Query(default=False, description="Include full description in response")
 ):
+    """
+    Get products with optional filtering.
+    
+    Optimization: By default, description field is excluded from list view
+    to reduce payload size. Set include_description=true to fetch full details.
+    """
     query = {}
     if category:
         query["category"] = category
@@ -283,10 +290,18 @@ async def get_products(
             price_query["$lte"] = max_price
         query["price"] = price_query
     
-    products = await db.products.find(query, {"_id": 0}).to_list(1000)
+    # Projection: Exclude description for lightweight list view
+    projection = {"_id": 0}
+    if not include_description:
+        projection["description"] = 0  # Exclude description to reduce payload
+    
+    products = await db.products.find(query, projection).to_list(1000)
     for p in products:
         if isinstance(p.get('created_at'), str):
             p['created_at'] = datetime.fromisoformat(p['created_at'])
+        # Set empty description if excluded (to satisfy Pydantic model)
+        if not include_description and 'description' not in p:
+            p['description'] = ""
     return products
 
 @api_router.get("/products/{product_id}", response_model=Product)
