@@ -115,7 +115,7 @@ class OrderCreate(BaseModel):
     customer_name: str
     customer_email: str
     customer_phone: str
-    items: List[CartItem]
+    items: List[CartItem]  # Cart items from frontend (product_id + quantity)
     total: float
     payment_method: str
 
