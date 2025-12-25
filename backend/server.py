@@ -84,6 +84,15 @@ class CartItem(BaseModel):
     product_id: str
     quantity: int
 
+class OrderItem(BaseModel):
+    """Order item with snapshot of product at time of purchase."""
+    product_id: str
+    quantity: int
+    # Product snapshot - preserves historical data
+    product_name: str
+    product_image: str
+    product_price: float
+
 class Cart(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
