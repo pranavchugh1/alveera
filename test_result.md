@@ -221,3 +221,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Implemented complete admin authentication and dashboard backend. Created auth.py for JWT handling, seed_admin.py to create initial admin (admin@alveera.com / Admin123!), and updated server.py with all admin endpoints. Please test: 1) Login with credentials, 2) Stats endpoint, 3) Product CRUD with auth, 4) Order management endpoints."
+  - agent: "main"
+    message: "Database optimizations complete. Added: 1) create_indexes() function on startup creating indexes on Products (category, price, unique design_no), Orders (compound created_at+status), Admins (unique email). 2) Optimized GET /products with projection to exclude description. 3) Updated Order model with product snapshots (name, image, price). 4) create_order now snapshots product details. 5) Admin stats use aggregation pipeline for revenue. Please test all backend endpoints including order creation with product snapshots."
