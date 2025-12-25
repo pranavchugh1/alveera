@@ -576,16 +576,22 @@ class ECommerceAPITester:
         print("🚀 Starting E-commerce API Tests...")
         print(f"Testing against: {self.base_url}")
         
-        # Test products API
+        # Test admin authentication first
+        auth_success = self.test_admin_authentication()
+        
+        if auth_success:
+            # Test admin-specific endpoints
+            self.test_admin_stats()
+            self.test_protected_product_crud()
+            self.test_admin_orders()
+            self.test_order_status_update()
+        else:
+            print("❌ Admin authentication failed - skipping admin-specific tests")
+        
+        # Test public endpoints
         product_id = self.test_products_api()
-        
-        # Test categories API  
         self.test_categories_api()
-        
-        # Test orders API
         order_id = self.test_orders_api(product_id)
-        
-        # Test error handling
         self.test_error_handling()
         
         # Print summary
