@@ -378,11 +378,54 @@ async def delete_product(
 
 @api_router.post("/orders", response_model=Order)
 async def create_order(order: OrderCreate):
-    order_dict = order.model_dump()
-    order_obj = Order(**order_dict)
+    """
+    Create a new order with product snapshots.
+    
+    Product details (name, image, price) are snapshot at the time of purchase
+    to preserve historical accuracy and eliminate N+1 query problems.
+    """
+    # Fetch product details for each item and create snapshots
+    order_items = []
+    for cart_item in order.items:
+        product = await db.products.find_one(
+            {"id": cart_item.product_id}, 
+            {"_id": 0, "name": 1, "image_url": 1, "price": 1}
+        )
+        
+        if not product:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Product not found: {cart_item.product_id}"
+            )
+        
+        # Create OrderItem with product snapshot
+        order_item = OrderItem(
+            product_id=cart_item.product_id,
+            quantity=cart_item.quantity,
+            product_name=product["name"],
+            product_image=product["image_url"],
+            product_price=product["price"]
+        )
+        order_items.append(order_item)
+    
+    # Create order with snapshot items
+    order_obj = Order(
+        customer_name=order.customer_name,
+        customer_email=order.customer_email,
+        customer_phone=order.customer_phone,
+        items=order_items,
+        total=order.total,
+        payment_method=order.payment_method
+    )
+    
     doc = order_obj.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
+    # Convert items to dicts for MongoDB
+    doc['items'] = [item.model_dump() for item in order_items]
+    
     await db.orders.insert_one(doc)
+    logger.info(f"Order created: {order_obj.id} for {order.customer_email}")
+    
     return order_obj
 
 @api_router.get("/orders/{order_id}", response_model=Order)
