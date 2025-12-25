@@ -1,3 +1,4 @@
+import React from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -10,26 +11,97 @@ import OrderConfirmationPage from "@/pages/OrderConfirmationPage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
+import { AdminProvider } from "@/context/AdminContext";
+
+// Admin Pages
+import AdminLogin from "@/pages/AdminLogin";
+import AdminDashboard from "@/pages/AdminDashboard";
+import AdminProducts from "@/pages/AdminProducts";
+import AdminOrders from "@/pages/AdminOrders";
+import { AdminLayout } from "@/components/AdminLayout";
 
 function App() {
   return (
-    <CartProvider>
-      <div className="App">
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/products" element={<ProductsPage />} />
-            <Route path="/products/:id" element={<ProductDetailPage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
-          </Routes>
-          <Footer />
-          <Toaster position="top-center" />
-        </BrowserRouter>
-      </div>
-    </CartProvider>
+    <AdminProvider>
+      <CartProvider>
+        <div className="App">
+          <BrowserRouter>
+            <Routes>
+              {/* Public Routes */}
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Navbar />
+                    <HomePage />
+                    <Footer />
+                  </>
+                }
+              />
+              <Route
+                path="/products"
+                element={
+                  <>
+                    <Navbar />
+                    <ProductsPage />
+                    <Footer />
+                  </>
+                }
+              />
+              <Route
+                path="/products/:id"
+                element={
+                  <>
+                    <Navbar />
+                    <ProductDetailPage />
+                    <Footer />
+                  </>
+                }
+              />
+              <Route
+                path="/cart"
+                element={
+                  <>
+                    <Navbar />
+                    <CartPage />
+                    <Footer />
+                  </>
+                }
+              />
+              <Route
+                path="/checkout"
+                element={
+                  <>
+                    <Navbar />
+                    <CheckoutPage />
+                    <Footer />
+                  </>
+                }
+              />
+              <Route
+                path="/order-confirmation/:orderId"
+                element={
+                  <>
+                    <Navbar />
+                    <OrderConfirmationPage />
+                    <Footer />
+                  </>
+                }
+              />
+
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="orders" element={<AdminOrders />} />
+              </Route>
+            </Routes>
+            <Toaster position="top-center" richColors />
+          </BrowserRouter>
+        </div>
+      </CartProvider>
+    </AdminProvider>
   );
 }
 
