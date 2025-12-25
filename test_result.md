@@ -163,7 +163,7 @@ backend:
         comment: "GET /api/admin/orders and PUT /api/admin/orders/{id}/status endpoints implemented"
       - working: true
         agent: "testing"
-        comment: "✅ TESTED: Order management fully functional. POST /api/orders creates orders with product snapshots (product_name, product_image, product_price). GET /api/admin/orders returns paginated orders with proper structure. PUT /api/admin/orders/{id}/status updates order status correctly. Product snapshot feature working as designed."
+        comment: "Order creation with product snapshots and admin order management endpoints working correctly"
 
   - task: "Admin Profile (Session Validation)"
     implemented: true
