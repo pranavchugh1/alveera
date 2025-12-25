@@ -29,10 +29,14 @@ class ECommerceAPITester:
         status_icon = "✅" if success else "❌"
         print(f"{status_icon} {name}: {details}")
 
-    def run_test(self, name, method, endpoint, expected_status, data=None, params=None):
+    def run_test(self, name, method, endpoint, expected_status, data=None, params=None, auth_required=False):
         """Run a single API test"""
         url = f"{self.api_url}/{endpoint}"
         headers = {'Content-Type': 'application/json'}
+        
+        # Add authorization header if auth is required
+        if auth_required and self.admin_token:
+            headers['Authorization'] = f'Bearer {self.admin_token}'
 
         try:
             if method == 'GET':
@@ -54,6 +58,8 @@ class ECommerceAPITester:
                         details += f", Items: {len(response_data)}"
                     elif isinstance(response_data, dict) and 'id' in response_data:
                         details += f", ID: {response_data['id'][:8]}..."
+                    elif isinstance(response_data, dict) and 'access_token' in response_data:
+                        details += f", Token received"
                 except:
                     pass
             else:
