@@ -118,7 +118,7 @@ backend:
         comment: "Implemented POST /api/admin/login with JWT token generation. Admin user seeded with admin@alveera.com / Admin123!"
       - working: true
         agent: "testing"
-        comment: "✅ TESTED: POST /api/admin/login works correctly with admin@alveera.com/Admin123! - returns JWT token. GET /api/admin/me validates session and returns admin profile (id, email, full_name). Invalid credentials properly return 401. Authentication system fully functional."
+        comment: "JWT authentication working perfectly with admin@alveera.com/Admin123!"
 
   - task: "Admin Stats endpoint"
     implemented: true
