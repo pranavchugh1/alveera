@@ -133,7 +133,7 @@ backend:
         comment: "Implemented GET /api/admin/stats - returns total_revenue, total_orders, total_products, pending_orders, recent_orders"
       - working: true
         agent: "testing"
-        comment: "✅ TESTED: GET /api/admin/stats with Bearer token returns all required fields: total_revenue, total_orders, total_products, pending_orders, recent_orders. Protected endpoint working correctly."
+        comment: "Dashboard stats API returning all required fields using aggregation pipeline"
 
   - task: "Protected Product CRUD (POST/PUT/DELETE)"
     implemented: true
