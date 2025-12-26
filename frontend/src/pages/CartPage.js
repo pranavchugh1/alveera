@@ -62,7 +62,7 @@ export default function CartPage() {
                 >
                   <Link to={`/products/${item.product_id}`} className="shrink-0">
                     <img
-                      src={item.product.image_url}
+                      src={item.product.images?.[0] || item.product.image_url}
                       alt={item.product.name}
                       className="w-32 h-40 object-cover"
                     />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAdmin } from '@/context/AdminContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -60,7 +60,7 @@ const productSchema = z.object({
   price: z.coerce.number().min(1, 'Price must be greater than 0'),
   material: z.string().min(1, 'Material is required'),
   color: z.string().min(1, 'Color is required'),
-  image_url: z.string().url('Must be a valid URL'),
+  images: z.array(z.string().url('Must be a valid URL')).min(1, 'At least one image is required'),
   category: z.string().min(1, 'Category is required'),
 });
 
@@ -90,12 +90,12 @@ export default function AdminProducts() {
       price: '',
       material: '',
       color: '',
-      image_url: '',
+      images: [],
       category: '',
     },
   });
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const response = await authAxios().get('/api/products');
       setProducts(response.data);
@@ -105,11 +105,11 @@ export default function AdminProducts() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authAxios]);
 
   useEffect(() => {
     fetchProducts();
-  }, [authAxios]);
+  }, [fetchProducts]);
 
   const openAddDialog = () => {
     setEditingProduct(null);
@@ -135,10 +135,21 @@ export default function AdminProducts() {
       price: product.price,
       material: product.material,
       color: product.color,
-      image_url: product.image_url,
+      images: product.images || (product.image_url ? [product.image_url] : []),
       category: product.category,
     });
     setDialogOpen(true);
+  };
+
+  const handleAddImage = (e) => {
+    e.preventDefault();
+    const currentImages = form.getValues('images');
+    form.setValue('images', [...currentImages, '']);
+  };
+
+  const handleRemoveImage = (index) => {
+    const currentImages = form.getValues('images');
+    form.setValue('images', currentImages.filter((_, i) => i !== index));
   };
 
   const openDeleteDialog = (product) => {
@@ -168,7 +179,7 @@ export default function AdminProducts() {
 
   const handleDelete = async () => {
     if (!deletingProduct) return;
-    
+
     setSubmitting(true);
     try {
       await authAxios().delete(`/api/products/${deletingProduct.id}`);
@@ -267,24 +278,22 @@ export default function AdminProducts() {
                       className="border-[#2a2a2a] hover:bg-[#2a2a2a]/50"
                     >
                       <TableCell>
-                        <div className="w-12 h-16 rounded overflow-hidden bg-[#2a2a2a]">
-                          {product.image_url ? (
+                        <div className="w-12 h-16 rounded overflow-hidden bg-[#2a2a2a] flex items-center justify-center">
+                          {(product.images && product.images.length > 0) ? (
+                            <img
+                              src={product.images[0]}
+                              alt={product.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : product.image_url ? (
                             <img
                               src={product.image_url}
                               alt={product.name}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                              }}
                             />
-                          ) : null}
-                          <div
-                            className="w-full h-full items-center justify-center hidden"
-                            style={{ display: product.image_url ? 'none' : 'flex' }}
-                          >
+                          ) : (
                             <ImageOff className="w-5 h-5 text-[#444]" />
-                          </div>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="font-mono text-sm text-[#888]">
@@ -501,20 +510,63 @@ export default function AdminProducts() {
               </div>
             </div>
 
-            {/* Image URL */}
-            <div className="space-y-2">
-              <Label htmlFor="image_url" className="text-[#888]">
-                Image URL *
-              </Label>
-              <Input
-                id="image_url"
-                {...form.register('image_url')}
-                placeholder="https://example.com/image.jpg"
-                className="bg-[#0f0f0f] border-[#2a2a2a] text-white focus:border-[#C5A059]"
-              />
-              {form.formState.errors.image_url && (
+            {/* Images */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-[#888]">Product Images *</Label>
+                <Button
+                  type="button"
+                  onClick={handleAddImage}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 border-[#2a2a2a] text-[#C5A059] hover:text-[#B08D45] hover:bg-[#2a2a2a]"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add URL
+                </Button>
+              </div>
+
+              <div className="space-y-2">
+                <Controller
+                  control={form.control}
+                  name="images"
+                  render={({ field }) => (
+                    <>
+                      {field.value.map((url, index) => (
+                        <div key={index} className="flex gap-2">
+                          <Input
+                            value={url}
+                            onChange={(e) => {
+                              const newImages = [...field.value];
+                              newImages[index] = e.target.value;
+                              field.onChange(newImages);
+                            }}
+                            placeholder="https://example.com/image.jpg"
+                            className="bg-[#0f0f0f] border-[#2a2a2a] text-white focus:border-[#C5A059]"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveImage(index)}
+                            className="text-red-400 hover:text-red-300 hover:bg-red-400/10 shrink-0"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                      {field.value.length === 0 && (
+                        <div className="text-center p-4 border border-dashed border-[#2a2a2a] rounded-md text-[#666] text-sm">
+                          No images added. Click "Add URL" to add image links.
+                        </div>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
+              {form.formState.errors.images && (
                 <p className="text-red-400 text-xs">
-                  {form.formState.errors.image_url.message}
+                  {form.formState.errors.images.message}
                 </p>
               )}
             </div>

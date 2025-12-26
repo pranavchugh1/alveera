@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useAdmin } from '@/context/AdminContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -71,7 +71,7 @@ export default function AdminOrders() {
   const [newStatus, setNewStatus] = useState('');
   const [updating, setUpdating] = useState(false);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
       const params = statusFilter !== 'all' ? { status: statusFilter } : {};
@@ -83,11 +83,11 @@ export default function AdminOrders() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authAxios, statusFilter]);
 
   useEffect(() => {
     fetchOrders();
-  }, [authAxios, statusFilter]);
+  }, [fetchOrders]);
 
   const openDetailsDialog = (order) => {
     setSelectedOrder(order);
@@ -418,17 +418,16 @@ export default function AdminOrders() {
                     >
                       <div className="flex items-center gap-2">
                         <div
-                          className={`w-2 h-2 rounded-full ${
-                            status === 'pending'
-                              ? 'bg-yellow-500'
-                              : status === 'confirmed'
+                          className={`w-2 h-2 rounded-full ${status === 'pending'
+                            ? 'bg-yellow-500'
+                            : status === 'confirmed'
                               ? 'bg-blue-500'
                               : status === 'shipped'
-                              ? 'bg-purple-500'
-                              : status === 'delivered'
-                              ? 'bg-green-500'
-                              : 'bg-red-500'
-                          }`}
+                                ? 'bg-purple-500'
+                                : status === 'delivered'
+                                  ? 'bg-green-500'
+                                  : 'bg-red-500'
+                            }`}
                         />
                         {statusConfig[status].label}
                       </div>

@@ -159,7 +159,11 @@ curl -X POST http://localhost:8001/api/products \
     "price": 2499.00,
     "material": "Silk",
     "color": "Red",
-    "image_url": "https://example.com/image.jpg",
+    "images": [
+      "https://example.com/image1.jpg",
+      "https://example.com/image2.jpg"
+    ],
+    "image_url": "https://example.com/image1.jpg",
     "category": "festive"
   }'
 ```
@@ -211,6 +215,7 @@ curl -X POST http://localhost:8001/api/products \
   "price": 2499.00,
   "material": "Georgette",
   "color": "Navy Blue",
+  "images": ["https://...", "https://..."],
   "image_url": "https://...",
   "category": "festive",
   "in_stock": true,

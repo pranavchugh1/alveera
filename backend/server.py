@@ -91,7 +91,8 @@ class Product(BaseModel):
     price: float
     material: str
     color: str
-    image_url: str
+    images: List[str]
+    image_url: str  # Kept for backward compatibility, returns images[0]
     category: str
     in_stock: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -103,7 +104,7 @@ class ProductCreate(BaseModel):
     price: float
     material: str
     color: str
-    image_url: str
+    images: List[str]
     category: str
 
 class ProductUpdate(BaseModel):
@@ -113,7 +114,7 @@ class ProductUpdate(BaseModel):
     price: Optional[float] = None
     material: Optional[str] = None
     color: Optional[str] = None
-    image_url: Optional[str] = None
+    images: Optional[List[str]] = None
     category: Optional[str] = None
     in_stock: Optional[bool] = None
 
@@ -324,6 +325,12 @@ async def create_product(
 ):
     """Create a new product (admin only)."""
     product_dict = product.model_dump()
+    # Backward compatibility: Populate image_url from first image
+    if product_dict['images']:
+        product_dict['image_url'] = product_dict['images'][0]
+    else:
+        product_dict['image_url'] = ''
+        
     product_obj = Product(**product_dict)
     doc = product_obj.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
@@ -344,6 +351,10 @@ async def update_product(
     
     # Build update dict with only provided fields
     update_data = {k: v for k, v in product_update.model_dump().items() if v is not None}
+    
+    # Backward compatibility: Update image_url if images is updated
+    if 'images' in update_data and update_data['images']:
+        update_data['image_url'] = update_data['images'][0]
     
     if not update_data:
         raise HTTPException(status_code=400, detail="No fields to update")

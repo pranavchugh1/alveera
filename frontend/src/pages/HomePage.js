@@ -56,9 +56,8 @@ export default function HomePage() {
         {heroSlides.map((slide, index) => (
           <div
             key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
             data-testid={`hero-slide-${index}`}
           >
             <div
@@ -110,9 +109,8 @@ export default function HomePage() {
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`w-12 h-1 transition-all ${
-                index === currentSlide ? 'bg-[#C5A059]' : 'bg-white/50'
-              }`}
+              className={`w-12 h-1 transition-all ${index === currentSlide ? 'bg-[#C5A059]' : 'bg-white/50'
+                }`}
               data-testid={`hero-indicator-${index}`}
             />
           ))}
@@ -210,7 +208,7 @@ export default function HomePage() {
                     <div className="bg-white p-4 transition-all duration-300 border border-transparent hover:border-[#C5A059]/30">
                       <div className="aspect-[3/4] mb-4 overflow-hidden">
                         <img
-                          src={product.image_url}
+                          src={product.images?.[0] || product.image_url}
                           alt={product.name}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />

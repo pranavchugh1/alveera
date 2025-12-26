@@ -29,7 +29,7 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.customer_name || !formData.customer_email || !formData.customer_phone) {
       toast.error('Please fill in all required fields');
       return;
@@ -49,7 +49,7 @@ export default function CheckoutPage() {
       };
 
       const response = await axios.post(`${API}/orders`, orderData);
-      
+
       clearCart();
       toast.success('Order placed successfully!');
       navigate(`/order-confirmation/${response.data.id}`);
@@ -138,11 +138,10 @@ export default function CheckoutPage() {
                 <div className="space-y-4">
                   {/* Stripe */}
                   <label
-                    className={`flex items-center gap-4 p-6 border-2 cursor-pointer transition-all ${
-                      paymentMethod === 'stripe'
+                    className={`flex items-center gap-4 p-6 border-2 cursor-pointer transition-all ${paymentMethod === 'stripe'
                         ? 'border-[#C5A059] bg-[#F9F5F0]'
                         : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                      }`}
                     data-testid="payment-stripe"
                   >
                     <input
@@ -169,11 +168,10 @@ export default function CheckoutPage() {
 
                   {/* Razorpay */}
                   <label
-                    className={`flex items-center gap-4 p-6 border-2 cursor-pointer transition-all ${
-                      paymentMethod === 'razorpay'
+                    className={`flex items-center gap-4 p-6 border-2 cursor-pointer transition-all ${paymentMethod === 'razorpay'
                         ? 'border-[#C5A059] bg-[#F9F5F0]'
                         : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                      }`}
                     data-testid="payment-razorpay"
                   >
                     <input
@@ -214,7 +212,7 @@ export default function CheckoutPage() {
                   {cart.map((item, index) => (
                     <div key={item.product_id} className="flex gap-4" data-testid={`summary-item-${index}`}>
                       <img
-                        src={item.product.image_url}
+                        src={item.product.images?.[0] || item.product.image_url}
                         alt={item.product.name}
                         className="w-16 h-20 object-cover"
                       />

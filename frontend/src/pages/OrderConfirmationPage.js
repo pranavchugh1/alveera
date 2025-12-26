@@ -13,19 +13,20 @@ export default function OrderConfirmationPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchOrder();
-  }, [orderId]);
-
-  const fetchOrder = async () => {
-    try {
-      const response = await axios.get(`${API}/orders/${orderId}`);
-      setOrder(response.data);
-    } catch (error) {
-      console.error('Error fetching order:', error);
-    } finally {
-      setLoading(false);
+    const fetchOrder = async () => {
+      try {
+        const response = await axios.get(`${API}/orders/${orderId}`);
+        setOrder(response.data);
+      } catch (error) {
+        console.error('Error fetching order:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (orderId) {
+      fetchOrder();
     }
-  };
+  }, [orderId]);
 
   if (loading) {
     return (

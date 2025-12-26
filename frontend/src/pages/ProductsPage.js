@@ -22,27 +22,27 @@ export default function ProductsPage() {
   });
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const params = {};
+        if (filters.category) params.category = filters.category;
+        if (filters.material) params.material = filters.material;
+        if (filters.color) params.color = filters.color;
+        if (filters.minPrice) params.min_price = filters.minPrice;
+        if (filters.maxPrice) params.max_price = filters.maxPrice;
+
+        const response = await axios.get(`${API}/products`, { params });
+        setProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchProducts();
   }, [filters]);
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const params = {};
-      if (filters.category) params.category = filters.category;
-      if (filters.material) params.material = filters.material;
-      if (filters.color) params.color = filters.color;
-      if (filters.minPrice) params.min_price = filters.minPrice;
-      if (filters.maxPrice) params.max_price = filters.maxPrice;
-
-      const response = await axios.get(`${API}/products`, { params });
-      setProducts(response.data);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -90,9 +90,8 @@ export default function ProductsPage() {
 
           {/* Filters Sidebar */}
           <aside
-            className={`lg:block lg:w-64 shrink-0 ${
-              showFilters ? 'block' : 'hidden'
-            }`}
+            className={`lg:block lg:w-64 shrink-0 ${showFilters ? 'block' : 'hidden'
+              }`}
             data-testid="filters-sidebar"
           >
             <div className="sticky top-24">
@@ -223,7 +222,7 @@ export default function ProductsPage() {
                       <div className="bg-white p-4 transition-all duration-300 border border-transparent hover:border-[#C5A059]/30">
                         <div className="aspect-[3/4] mb-4 overflow-hidden">
                           <img
-                            src={product.image_url}
+                            src={product.images?.[0] || product.image_url}
                             alt={product.name}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />

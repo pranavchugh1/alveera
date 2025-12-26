@@ -23,6 +23,11 @@ products_data = [
         "price": 2499.00,
         "material": "Georgette",
         "color": "Navy Blue",
+        "images": [
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600",
+            "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600",
+            "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600"
+        ],
         "image_url": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600",
         "category": "festive",
         "in_stock": True,
@@ -36,6 +41,11 @@ products_data = [
         "price": 2299.00,
         "material": "Chiffon",
         "color": "Orange",
+        "images": [
+            "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600",
+            "https://images.unsplash.com/photo-1654764745869-545a2316a169?w=600",
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600"
+        ],
         "image_url": "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600",
         "category": "new-arrivals",
         "in_stock": True,
@@ -49,6 +59,11 @@ products_data = [
         "price": 2199.00,
         "material": "Georgette",
         "color": "Pink",
+        "images": [
+            "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600",
+            "https://images.unsplash.com/photo-1638964327749-53436bcccdca?w=600",
+            "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600"
+        ],
         "image_url": "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600",
         "category": "new-arrivals",
         "in_stock": True,
@@ -62,6 +77,11 @@ products_data = [
         "price": 2599.00,
         "material": "Georgette",
         "color": "Red",
+        "images": [
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600",
+            "https://images.unsplash.com/photo-1654764745869-545a2316a169?w=600",
+            "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600"
+        ],
         "image_url": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600",
         "category": "festive",
         "in_stock": True,
@@ -75,6 +95,11 @@ products_data = [
         "price": 2399.00,
         "material": "Chiffon",
         "color": "Green",
+        "images": [
+            "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600",
+            "https://images.unsplash.com/photo-1638964327749-53436bcccdca?w=600",
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600"
+        ],
         "image_url": "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600",
         "category": "new-arrivals",
         "in_stock": True,
@@ -88,6 +113,11 @@ products_data = [
         "price": 2299.00,
         "material": "Georgette",
         "color": "Orange",
+        "images": [
+            "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600",
+            "https://images.unsplash.com/photo-1654764745869-545a2316a169?w=600",
+            "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600"
+        ],
         "image_url": "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600",
         "category": "festive",
         "in_stock": True,
@@ -101,6 +131,11 @@ products_data = [
         "price": 2499.00,
         "material": "Silk Blend",
         "color": "Yellow",
+        "images": [
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600",
+            "https://images.unsplash.com/photo-1638964327749-53436bcccdca?w=600",
+            "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600"
+        ],
         "image_url": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600",
         "category": "silk",
         "in_stock": True,
@@ -114,6 +149,11 @@ products_data = [
         "price": 2799.00,
         "material": "Silk",
         "color": "Purple",
+        "images": [
+            "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600",
+            "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600",
+            "https://images.unsplash.com/photo-1654764745869-545a2316a169?w=600"
+        ],
         "image_url": "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600",
         "category": "silk",
         "in_stock": True,
@@ -127,6 +167,11 @@ products_data = [
         "price": 2399.00,
         "material": "Georgette",
         "color": "Pink",
+        "images": [
+            "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600",
+            "https://images.unsplash.com/photo-1638964327749-53436bcccdca?w=600",
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600"
+        ],
         "image_url": "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600",
         "category": "new-arrivals",
         "in_stock": True,
@@ -140,6 +185,11 @@ products_data = [
         "price": 2299.00,
         "material": "Chiffon",
         "color": "Green",
+        "images": [
+            "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600",
+            "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600",
+            "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600"
+        ],
         "image_url": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600",
         "category": "festive",
         "in_stock": True,

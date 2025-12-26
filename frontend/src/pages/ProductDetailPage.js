@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import { Minus, Plus, ShoppingCart, Heart } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
@@ -19,34 +19,54 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState('');
   const [relatedProducts, setRelatedProducts] = useState([]);
 
   useEffect(() => {
+    const fetchRelatedProducts = async (category) => {
+      try {
+        const response = await axios.get(`${API}/products?category=${category}`);
+        setRelatedProducts(response.data.filter(p => p.id !== id).slice(0, 4));
+      } catch (error) {
+        console.error('Error fetching related products:', error);
+      }
+    };
+
+    const fetchProduct = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${API}/products/${id}`);
+        setProduct(response.data);
+        if (response.data.images && response.data.images.length > 0) {
+          setSelectedImage(response.data.images[0]);
+        } else {
+          setSelectedImage(response.data.image_url);
+        }
+        fetchRelatedProducts(response.data.category);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        toast.error('Product not found');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchProduct();
     window.scrollTo(0, 0);
   }, [id]);
 
-  const fetchProduct = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${API}/products/${id}`);
-      setProduct(response.data);
-      fetchRelatedProducts(response.data.category);
-    } catch (error) {
-      console.error('Error fetching product:', error);
-      toast.error('Product not found');
-    } finally {
-      setLoading(false);
-    }
+  const handlePrevImage = () => {
+    if (!product.images || product.images.length <= 1) return;
+    const currentIndex = product.images.indexOf(selectedImage);
+    const newIndex = currentIndex === 0 ? product.images.length - 1 : currentIndex - 1;
+    setSelectedImage(product.images[newIndex]);
   };
 
-  const fetchRelatedProducts = async (category) => {
-    try {
-      const response = await axios.get(`${API}/products?category=${category}`);
-      setRelatedProducts(response.data.filter(p => p.id !== id).slice(0, 4));
-    } catch (error) {
-      console.error('Error fetching related products:', error);
-    }
+  const handleNextImage = () => {
+    if (!product.images || product.images.length <= 1) return;
+    const currentIndex = product.images.indexOf(selectedImage);
+    const newIndex = currentIndex === product.images.length - 1 ? 0 : currentIndex + 1;
+    setSelectedImage(product.images[newIndex]);
   };
 
   const handleAddToCart = () => {
@@ -89,14 +109,59 @@ export default function ProductDetailPage() {
             animate={{ opacity: 1, x: 0 }}
             className="" data-testid="product-image-section"
           >
-            <Zoom>
-              <img
-                src={product.image_url}
-                alt={product.name}
-                className="w-full h-auto"
-                data-testid="product-image"
-              />
-            </Zoom>
+            <div className="space-y-4">
+              <div className="relative border border-gray-100 rounded-lg overflow-hidden bg-white group">
+                <Zoom>
+                  <img
+                    src={selectedImage}
+                    alt={product.name}
+                    className="w-full h-auto object-cover"
+                  />
+                </Zoom>
+
+                {/* Navigation Arrows */}
+                {product.images && product.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePrevImage();
+                      }}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleNextImage();
+                      }}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {/* Image Gallery */}
+              {product.images && product.images.length > 1 && (
+                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                  {product.images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedImage(img)}
+                      className={`shrink-0 w-20 h-24 border-2 rounded-md overflow-hidden transition-all ${selectedImage === img ? 'border-[#C5A059]' : 'border-transparent hover:border-[#C5A059]/50'
+                        }`}
+                    >
+                      <img src={img} alt={`${product.name} view ${idx + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </motion.div>
 
           {/* Product Info */}
@@ -199,7 +264,7 @@ export default function ProductDetailPage() {
                     <div className="bg-white p-4 transition-all duration-300 border border-transparent hover:border-[#C5A059]/30">
                       <div className="aspect-[3/4] mb-4 overflow-hidden">
                         <img
-                          src={item.image_url}
+                          src={item.images?.[0] || item.image_url}
                           alt={item.name}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
