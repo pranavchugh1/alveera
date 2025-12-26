@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Mail, Phone } from 'lucide-react';
 
 export default function Footer() {
@@ -17,24 +18,29 @@ export default function Footer() {
             <h4 className="font-serif text-lg mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/products" className="text-gray-600 hover:text-[#C5A059] transition-colors" data-testid="footer-link-shop">
+                <Link to="/products" className="text-gray-600 hover:text-[#C5A059] transition-colors" data-testid="footer-link-shop">
                   Shop All
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/products?category=new-arrivals" className="text-gray-600 hover:text-[#C5A059] transition-colors" data-testid="footer-link-new">
+                <Link to="/products?category=new-arrivals" className="text-gray-600 hover:text-[#C5A059] transition-colors" data-testid="footer-link-new">
                   New Arrivals
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/products?category=festive" className="text-gray-600 hover:text-[#C5A059] transition-colors" data-testid="footer-link-festive">
+                <Link to="/products?category=festive" className="text-gray-600 hover:text-[#C5A059] transition-colors" data-testid="footer-link-festive">
                   Festive Collection
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/products?category=silk" className="text-gray-600 hover:text-[#C5A059] transition-colors" data-testid="footer-link-silk">
+                <Link to="/products?category=silk" className="text-gray-600 hover:text-[#C5A059] transition-colors" data-testid="footer-link-silk">
                   Silk Sarees
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link to="/admin/login" className="text-gray-600 hover:text-[#C5A059] transition-colors" data-testid="footer-link-admin">
+                  Admin Login
+                </Link>
               </li>
             </ul>
           </div>

@@ -1,11 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
 export default function Navbar() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { getCartItemsCount } = useCart();
   const cartCount = getCartItemsCount();
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50" data-testid="navbar">
@@ -62,8 +71,65 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden ml-4 p-2 text-gray-700 hover:text-[#C5A059] transition-colors"
+            onClick={toggleMobileMenu}
+            data-testid="mobile-menu-button"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 absolute w-full left-0 shadow-lg" data-testid="mobile-menu">
+          <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
+            <Link
+              to="/"
+              className="text-sm font-medium tracking-wide text-gray-700 hover:text-[#C5A059] transition-colors"
+              onClick={closeMobileMenu}
+              data-testid="mobile-nav-home"
+            >
+              HOME
+            </Link>
+            <Link
+              to="/products"
+              className="text-sm font-medium tracking-wide text-gray-700 hover:text-[#C5A059] transition-colors"
+              onClick={closeMobileMenu}
+              data-testid="mobile-nav-products"
+            >
+              SHOP
+            </Link>
+            <Link
+              to="/products?category=new-arrivals"
+              className="text-sm font-medium tracking-wide text-gray-700 hover:text-[#C5A059] transition-colors"
+              onClick={closeMobileMenu}
+              data-testid="mobile-nav-new-arrivals"
+            >
+              NEW ARRIVALS
+            </Link>
+            <Link
+              to="/products?category=festive"
+              className="text-sm font-medium tracking-wide text-gray-700 hover:text-[#C5A059] transition-colors"
+              onClick={closeMobileMenu}
+              data-testid="mobile-nav-festive"
+            >
+              FESTIVE
+            </Link>
+            <Link
+              to="/admin/login"
+              className="text-sm font-medium tracking-wide text-gray-700 hover:text-[#C5A059] transition-colors border-t border-gray-100 pt-4"
+              onClick={closeMobileMenu}
+              data-testid="mobile-nav-admin"
+            >
+              ADMIN LOGIN
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
