@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 class FocusedAPITester:
-    def __init__(self, base_url="https://ecom-userauth.preview.emergentagent.com"):
+    def __init__(self, base_url="https://fast-shop-app.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.admin_token = None

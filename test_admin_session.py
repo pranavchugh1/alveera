@@ -3,7 +3,7 @@ import json
 
 def test_admin_session_validation():
     """Test GET /api/admin/me endpoint specifically"""
-    base_url = "https://ecom-userauth.preview.emergentagent.com"
+    base_url = "https://fast-shop-app.preview.emergentagent.com"
     api_url = f"{base_url}/api"
     
     print("🔍 Testing Admin Session Validation...")
