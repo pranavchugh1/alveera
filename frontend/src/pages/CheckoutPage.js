@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
-import { CreditCard, Smartphone } from 'lucide-react';
+import { CreditCard, Smartphone, LogIn, User } from 'lucide-react';
 import { FaStripe, FaCcVisa, FaCcMastercard } from 'react-icons/fa';
 import { SiRazorpay } from 'react-icons/si';
 
@@ -14,14 +15,26 @@ const API = `${BACKEND_URL}/api`;
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
+  const { isAuthenticated, user, token, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('stripe');
 
   const [formData, setFormData] = useState({
-    customer_name: '',
-    customer_email: '',
-    customer_phone: '',
+    customer_name: user?.full_name || '',
+    customer_email: user?.email || '',
+    customer_phone: user?.phone || '',
   });
+
+  // Update form data when user changes
+  React.useEffect(() => {
+    if (user) {
+      setFormData({
+        customer_name: user.full_name || '',
+        customer_email: user.email || '',
+        customer_phone: user.phone || '',
+      });
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,6 +42,11 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isAuthenticated) {
+      toast.error('Please login to place an order');
+      return;
+    }
 
     if (!formData.customer_name || !formData.customer_email || !formData.customer_phone) {
       toast.error('Please fill in all required fields');
@@ -48,7 +66,9 @@ export default function CheckoutPage() {
         payment_method: paymentMethod
       };
 
-      const response = await axios.post(`${API}/orders`, orderData);
+      const response = await axios.post(`${API}/orders`, orderData, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
 
       clearCart();
       toast.success('Order placed successfully!');
@@ -80,6 +100,48 @@ export default function CheckoutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Checkout Form */}
             <div className="lg:col-span-2 space-y-8" data-testid="checkout-form-section">
+              
+              {/* Login Required Banner */}
+              {!authLoading && !isAuthenticated && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-gradient-to-r from-[#1a1a1a] to-[#2d2d2d] p-6 text-white"
+                  data-testid="login-required-banner"
+                >
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-[#C5A059] rounded-full flex items-center justify-center">
+                        <User className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">Login Required</h3>
+                        <p className="text-gray-400 text-sm">Please sign in to complete your purchase</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <Link
+                        to="/login"
+                        state={{ from: '/checkout' }}
+                        className="bg-[#C5A059] text-white px-6 py-2.5 font-semibold text-sm tracking-wide hover:bg-[#A08048] transition-colors flex items-center gap-2"
+                        data-testid="login-to-checkout-button"
+                      >
+                        <LogIn className="w-4 h-4" />
+                        LOGIN
+                      </Link>
+                      <Link
+                        to="/signup"
+                        state={{ from: '/checkout' }}
+                        className="border border-white text-white px-6 py-2.5 font-semibold text-sm tracking-wide hover:bg-white/10 transition-colors"
+                        data-testid="signup-to-checkout-button"
+                      >
+                        SIGN UP
+                      </Link>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {/* Customer Information */}
               <div data-testid="customer-info-section">
                 <h2 className="font-serif text-2xl mb-6">Customer Information</h2>
@@ -95,7 +157,8 @@ export default function CheckoutPage() {
                       value={formData.customer_name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-0 py-3 border-b border-gray-300 focus:border-[#C5A059] outline-none bg-transparent transition-colors"
+                      disabled={!isAuthenticated}
+                      className="w-full px-0 py-3 border-b border-gray-300 focus:border-[#C5A059] outline-none bg-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       data-testid="customer-name-input"
                     />
                   </div>
@@ -110,7 +173,8 @@ export default function CheckoutPage() {
                       value={formData.customer_email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-0 py-3 border-b border-gray-300 focus:border-[#C5A059] outline-none bg-transparent transition-colors"
+                      disabled={!isAuthenticated}
+                      className="w-full px-0 py-3 border-b border-gray-300 focus:border-[#C5A059] outline-none bg-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       data-testid="customer-email-input"
                     />
                   </div>
@@ -125,7 +189,8 @@ export default function CheckoutPage() {
                       value={formData.customer_phone}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-0 py-3 border-b border-gray-300 focus:border-[#C5A059] outline-none bg-transparent transition-colors"
+                      disabled={!isAuthenticated}
+                      className="w-full px-0 py-3 border-b border-gray-300 focus:border-[#C5A059] outline-none bg-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       data-testid="customer-phone-input"
                     />
                   </div>
@@ -133,7 +198,7 @@ export default function CheckoutPage() {
               </div>
 
               {/* Payment Method */}
-              <div data-testid="payment-method-section">
+              <div data-testid="payment-method-section" className={!isAuthenticated ? 'opacity-50 pointer-events-none' : ''}>
                 <h2 className="font-serif text-2xl mb-6">Payment Method</h2>
                 <div className="space-y-4">
                   {/* Stripe */}
@@ -245,14 +310,26 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                  data-testid="place-order-button"
-                >
-                  {loading ? 'PROCESSING...' : 'PLACE ORDER'}
-                </button>
+                {isAuthenticated ? (
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    data-testid="place-order-button"
+                  >
+                    {loading ? 'PROCESSING...' : 'PLACE ORDER'}
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    state={{ from: '/checkout' }}
+                    className="w-full btn-primary flex items-center justify-center gap-2"
+                    data-testid="login-to-place-order-button"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    LOGIN TO PLACE ORDER
+                  </Link>
+                )}
               </div>
             </div>
           </div>
