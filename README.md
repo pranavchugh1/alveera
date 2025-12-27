@@ -14,8 +14,11 @@ A production-ready headless e-commerce platform built with FastAPI, React, and M
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
 
 ### Backend
-- **Products API**: CRUD operations with advanced filtering
-- **Orders API**: Complete order management
+- **Cart Management**: Real-time cart updates with persistence
+- **User Authentication**: Secure Signup/Login with JWT
+- **User Profile**: Order history and profile management
+- **Protected Checkout**: Verification required for order placement
+- **Admin Dashboard**: Comprehensive analytics & order management
 - **MongoDB Integration**: Using Motor async driver
 - **CORS Enabled**: Ready for production deployment
 
