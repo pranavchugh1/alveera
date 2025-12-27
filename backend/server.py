@@ -39,8 +39,10 @@ db = client[os.environ['DB_NAME']]
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 admin_router = APIRouter(prefix="/api/admin")
+auth_router = APIRouter(prefix="/api/auth")  # Customer auth router
 
 security = HTTPBearer()
+optional_security = HTTPBearer(auto_error=False)  # For optional auth
 
 # Logging setup
 logging.basicConfig(
