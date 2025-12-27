@@ -325,6 +325,128 @@ async def get_admin_profile(current_admin: dict = Depends(get_current_admin)):
         "full_name": current_admin["full_name"]
     }
 
+
+# =============================================================================
+# Customer Auth Routes
+# =============================================================================
+
+@auth_router.post("/signup", response_model=UserToken)
+async def user_signup(user_data: UserCreate):
+    """Register a new customer user."""
+    # Check if email already exists
+    existing_user = await db.users.find_one({"email": user_data.email})
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already registered"
+        )
+    
+    # Validate password strength
+    if len(user_data.password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 6 characters long"
+        )
+    
+    # Create user
+    user = User(
+        email=user_data.email,
+        hashed_password=get_password_hash(user_data.password),
+        full_name=user_data.full_name,
+        phone=user_data.phone
+    )
+    
+    # Save to database
+    user_doc = user.model_dump()
+    user_doc['created_at'] = user_doc['created_at'].isoformat()
+    await db.users.insert_one(user_doc)
+    
+    logger.info(f"New user registered: {user.email}")
+    
+    # Create access token
+    access_token = create_user_access_token(
+        data={"sub": user.email, "user_id": user.id},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    
+    return UserToken(
+        access_token=access_token,
+        user={
+            "id": user.id,
+            "email": user.email,
+            "full_name": user.full_name,
+            "phone": user.phone
+        }
+    )
+
+
+@auth_router.post("/login", response_model=UserToken)
+async def user_login(login_data: UserLogin):
+    """Authenticate customer user and return JWT token."""
+    user = await db.users.find_one({"email": login_data.email}, {"_id": 0})
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
+    
+    if not verify_password(login_data.password, user["hashed_password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password"
+        )
+    
+    if not user.get("is_active", True):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account is disabled"
+        )
+    
+    # Create access token
+    access_token = create_user_access_token(
+        data={"sub": user["email"], "user_id": user["id"]},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
+    
+    logger.info(f"User logged in: {user['email']}")
+    
+    return UserToken(
+        access_token=access_token,
+        user={
+            "id": user["id"],
+            "email": user["email"],
+            "full_name": user["full_name"],
+            "phone": user.get("phone", "")
+        }
+    )
+
+
+@auth_router.get("/me")
+async def get_user_profile(current_user: dict = Depends(get_current_user)):
+    """Get current logged-in user's profile."""
+    return {
+        "id": current_user["id"],
+        "email": current_user["email"],
+        "full_name": current_user["full_name"],
+        "phone": current_user.get("phone", "")
+    }
+
+
+@auth_router.get("/orders")
+async def get_user_orders(current_user: dict = Depends(get_current_user)):
+    """Get orders for the current logged-in user."""
+    orders = await db.orders.find(
+        {"user_id": current_user["id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    for order in orders:
+        if isinstance(order.get('created_at'), str):
+            order['created_at'] = datetime.fromisoformat(order['created_at']).isoformat()
+    
+    return {"orders": orders, "total": len(orders)}
+
 # =============================================================================
 # Public Product Routes
 # =============================================================================
