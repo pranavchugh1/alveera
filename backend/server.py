@@ -453,7 +453,17 @@ async def get_user_orders(current_user: dict = Depends(get_current_user)):
 # Public Product Routes
 # =============================================================================
 
-@api_router.get("/products", response_model=List[Product])
+class PaginatedProductsResponse(BaseModel):
+    """Response model for paginated products."""
+    products: List[Product]
+    total_products: int
+    total_pages: int
+    current_page: int
+    limit: int
+    has_more: bool
+
+
+@api_router.get("/products")
 async def get_products(
     category: Optional[str] = None,
     material: Optional[str] = None,
@@ -461,13 +471,24 @@ async def get_products(
     search: Optional[str] = None,
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
+    page: int = Query(default=1, ge=1, description="Page number (starts at 1)"),
+    limit: int = Query(default=20, ge=1, le=100, description="Products per page (max 100)"),
     include_description: bool = Query(default=False, description="Include full description in response")
 ):
     """
-    Get products with optional filtering.
+    Get products with optional filtering and server-side pagination.
     
-    Optimization: By default, description field is excluded from list view
-    to reduce payload size. Set include_description=true to fetch full details.
+    Optimizations:
+    - Server-side pagination reduces payload size and improves load times
+    - Description field excluded by default for lightweight list view
+    - HTTP Cache headers (5 minutes) for browser caching
+    
+    Args:
+        page: Page number (default: 1)
+        limit: Products per page (default: 20, max: 100)
+    
+    Returns:
+        Paginated products with metadata (total_products, total_pages, has_more)
     """
     query = {}
     if category:
@@ -489,19 +510,47 @@ async def get_products(
             price_query["$lte"] = max_price
         query["price"] = price_query
     
+    # Get total count for pagination metadata
+    total_products = await db.products.count_documents(query)
+    total_pages = math.ceil(total_products / limit) if total_products > 0 else 1
+    
+    # Calculate skip value for pagination
+    skip = (page - 1) * limit
+    
     # Projection: Exclude description for lightweight list view
     projection = {"_id": 0}
     if not include_description:
         projection["description"] = 0  # Exclude description to reduce payload
     
-    products = await db.products.find(query, projection).to_list(1000)
+    # Fetch paginated products using skip and limit
+    products = await db.products.find(query, projection).skip(skip).limit(limit).to_list(limit)
+    
     for p in products:
         if isinstance(p.get('created_at'), str):
             p['created_at'] = datetime.fromisoformat(p['created_at'])
         # Set empty description if excluded (to satisfy Pydantic model)
         if not include_description and 'description' not in p:
             p['description'] = ""
-    return products
+    
+    # Build response with pagination metadata
+    response_data = {
+        "products": products,
+        "total_products": total_products,
+        "total_pages": total_pages,
+        "current_page": page,
+        "limit": limit,
+        "has_more": page < total_pages
+    }
+    
+    # Return JSONResponse with Cache-Control headers for browser caching
+    # Cache for 5 minutes (300 seconds) - reduces redundant API calls
+    return JSONResponse(
+        content=response_data,
+        headers={
+            "Cache-Control": "public, max-age=300",
+            "Vary": "Accept-Encoding"
+        }
+    )
 
 @api_router.get("/products/{product_id}", response_model=Product)
 async def get_product(product_id: str):
