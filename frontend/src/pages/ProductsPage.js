@@ -1,17 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, Loader2, Search } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Default pagination settings
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 20;
+
+// Debounce hook for search optimization
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Pagination state
+  const [page, setPage] = useState(DEFAULT_PAGE);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  
+  // Search state with debounce
+  const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebounce(searchInput, 300);
 
   const [filters, setFilters] = useState({
     category: searchParams.get('category') || '',
@@ -21,28 +53,67 @@ export default function ProductsPage() {
     maxPrice: '',
   });
 
-  useEffect(() => {
-    const fetchProducts = async () => {
+  // Track if this is the initial load or filter/search change
+  const isFilterChange = useRef(false);
+
+  // Fetch products with pagination
+  const fetchProducts = useCallback(async (pageNum, shouldAppend = false) => {
+    if (shouldAppend) {
+      setLoadingMore(true);
+    } else {
       setLoading(true);
-      try {
-        const params = {};
-        if (filters.category) params.category = filters.category;
-        if (filters.material) params.material = filters.material;
-        if (filters.color) params.color = filters.color;
-        if (filters.minPrice) params.min_price = filters.minPrice;
-        if (filters.maxPrice) params.max_price = filters.maxPrice;
+    }
+    
+    try {
+      const params = {
+        page: pageNum,
+        limit: DEFAULT_LIMIT
+      };
+      
+      if (filters.category) params.category = filters.category;
+      if (filters.material) params.material = filters.material;
+      if (filters.color) params.color = filters.color;
+      if (filters.minPrice) params.min_price = filters.minPrice;
+      if (filters.maxPrice) params.max_price = filters.maxPrice;
+      if (debouncedSearch) params.search = debouncedSearch;
 
-        const response = await axios.get(`${API}/products`, { params });
-        setProducts(response.data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
+      const response = await axios.get(`${API}/products`, { params });
+      const data = response.data;
+      
+      // Update products - append or replace based on shouldAppend
+      if (shouldAppend) {
+        setProducts(prev => [...prev, ...data.products]);
+      } else {
+        setProducts(data.products);
       }
-    };
+      
+      // Update pagination metadata
+      setTotalProducts(data.total_products);
+      setTotalPages(data.total_pages);
+      setHasMore(data.has_more);
+      setPage(pageNum);
+      
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }, [filters, debouncedSearch]);
 
-    fetchProducts();
-  }, [filters]);
+  // Effect for initial load and filter/search changes
+  useEffect(() => {
+    // Reset to page 1 when filters or search changes
+    setPage(DEFAULT_PAGE);
+    fetchProducts(DEFAULT_PAGE, false);
+  }, [filters, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Handle "Load More" button click
+  const handleLoadMore = () => {
+    if (hasMore && !loadingMore) {
+      fetchProducts(page + 1, true);
+    }
+  };
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -56,6 +127,11 @@ export default function ProductsPage() {
     }
   };
 
+  // Handle search input change (updates immediately for UI, debounced for API)
+  const handleSearchChange = (e) => {
+    setSearchInput(e.target.value);
+  };
+
   const clearFilters = () => {
     setFilters({
       category: '',
@@ -64,6 +140,7 @@ export default function ProductsPage() {
       minPrice: '',
       maxPrice: '',
     });
+    setSearchInput('');
     setSearchParams({});
   };
 
@@ -97,7 +174,7 @@ export default function ProductsPage() {
             <div className="sticky top-24">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-serif text-2xl" data-testid="filters-title">Filters</h2>
-                {(filters.category || filters.material || filters.color || filters.minPrice || filters.maxPrice) && (
+                {(filters.category || filters.material || filters.color || filters.minPrice || filters.maxPrice || searchInput) && (
                   <button
                     onClick={clearFilters}
                     className="text-sm text-[#C5A059] hover:underline"
@@ -109,6 +186,25 @@ export default function ProductsPage() {
               </div>
 
               <div className="space-y-6">
+                {/* Search Input with Debounce */}
+                <div data-testid="filter-search">
+                  <h3 className="font-semibold mb-3 text-sm uppercase tracking-wider">Search</h3>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchInput}
+                      onChange={handleSearchChange}
+                      className="w-full pl-10 pr-3 py-2 border-b border-gray-300 focus:border-[#C5A059] outline-none bg-transparent"
+                      data-testid="search-input"
+                    />
+                  </div>
+                  {searchInput && searchInput !== debouncedSearch && (
+                    <p className="text-xs text-gray-400 mt-1">Searching...</p>
+                  )}
+                </div>
+
                 {/* Category Filter */}
                 <div data-testid="filter-category">
                   <h3 className="font-semibold mb-3 text-sm uppercase tracking-wider">Category</h3>
@@ -196,7 +292,7 @@ export default function ProductsPage() {
           <main className="flex-1">
             <div className="mb-6 flex items-center justify-between" data-testid="products-header">
               <p className="text-gray-600" data-testid="products-count">
-                {products.length} {products.length === 1 ? 'Product' : 'Products'}
+                Showing {products.length} of {totalProducts} {totalProducts === 1 ? 'Product' : 'Products'}
               </p>
             </div>
 
@@ -209,37 +305,68 @@ export default function ProductsPage() {
                 <p className="text-gray-600 text-lg">No products found. Try adjusting your filters.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-testid="products-grid">
-                {products.map((product, index) => (
-                  <motion.div
-                    key={product.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    data-testid={`product-card-${index}`}
-                  >
-                    <Link to={`/products/${product.id}`} className="group block">
-                      <div className="bg-white p-4 transition-all duration-300 border border-transparent hover:border-[#C5A059]/30">
-                        <div className="aspect-[3/4] mb-4 overflow-hidden">
-                          <img
-                            src={product.images?.[0] || product.image_url}
-                            alt={product.name}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" data-testid="products-grid">
+                  {products.map((product, index) => (
+                    <motion.div
+                      key={product.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(index * 0.05, 0.5) }}
+                      data-testid={`product-card-${index}`}
+                    >
+                      <Link to={`/products/${product.id}`} className="group block">
+                        <div className="bg-white p-4 transition-all duration-300 border border-transparent hover:border-[#C5A059]/30">
+                          <div className="aspect-[3/4] mb-4 overflow-hidden">
+                            <img
+                              src={product.images?.[0] || product.image_url}
+                              alt={product.name}
+                              loading="lazy"
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          </div>
+                          <p className="text-xs text-gray-500 mb-1">{product.design_no}</p>
+                          <h3 className="font-serif text-lg mb-2 group-hover:text-[#C5A059] transition-colors line-clamp-2">
+                            {product.name}
+                          </h3>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[#C5A059] font-bold">₹{product.price.toFixed(2)}</p>
+                            <p className="text-xs text-gray-500">{product.material}</p>
+                          </div>
                         </div>
-                        <p className="text-xs text-gray-500 mb-1">{product.design_no}</p>
-                        <h3 className="font-serif text-lg mb-2 group-hover:text-[#C5A059] transition-colors line-clamp-2">
-                          {product.name}
-                        </h3>
-                        <div className="flex items-center justify-between">
-                          <p className="text-[#C5A059] font-bold">₹{product.price.toFixed(2)}</p>
-                          <p className="text-xs text-gray-500">{product.material}</p>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Load More Button */}
+                {hasMore && (
+                  <div className="text-center mt-12" data-testid="load-more-container">
+                    <button
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      className="inline-flex items-center gap-2 px-8 py-3 bg-[#C5A059] text-white font-medium hover:bg-[#B08F4A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      data-testid="load-more-button"
+                    >
+                      {loadingMore ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        `Load More (Page ${page + 1} of ${totalPages})`
+                      )}
+                    </button>
+                  </div>
+                )}
+
+                {/* All products loaded message */}
+                {!hasMore && products.length > 0 && totalProducts > DEFAULT_LIMIT && (
+                  <div className="text-center mt-8" data-testid="all-loaded">
+                    <p className="text-gray-500 text-sm">All {totalProducts} products loaded</p>
+                  </div>
+                )}
+              </>
             )}
           </main>
         </div>
