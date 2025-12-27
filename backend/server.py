@@ -779,6 +779,7 @@ async def get_categories():
 # =============================================================================
 
 app.include_router(api_router)
+app.include_router(auth_router)  # Customer auth routes
 
 app.add_middleware(
     CORSMiddleware,
