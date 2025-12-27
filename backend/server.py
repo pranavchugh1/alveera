@@ -159,6 +159,7 @@ class Order(BaseModel):
     customer_name: str
     customer_email: str
     customer_phone: str
+    user_id: Optional[str] = None  # Link to registered user account (if logged in)
     items: List[OrderItem]  # Changed to OrderItem with product snapshots
     total: float
     payment_method: str
