@@ -21,6 +21,7 @@ A production-ready headless e-commerce platform built with FastAPI, React, and M
 - **Admin Dashboard**: Comprehensive analytics & order management
 - **MongoDB Integration**: Using Motor async driver
 - **CORS Enabled**: Ready for production deployment
+- **Performance Optimized**: Server-side pagination, caching, and compression
 
 ### Design Features
 - **Royal Minimalism Aesthetic**: Clean white backgrounds, bronze accents (#C5A059)
@@ -38,6 +39,7 @@ A production-ready headless e-commerce platform built with FastAPI, React, and M
 - **Animations**: Framer Motion
 - **Icons**: Lucide React + React Icons
 - **UI Components**: Shadcn UI
+- **Performance**: Code Splitting (React.lazy), Image Optimization
 - **State Management**: React Context API (Cart)
 - **Database**: MongoDB
 
