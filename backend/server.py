@@ -584,12 +584,17 @@ async def delete_product(
 # =============================================================================
 
 @api_router.post("/orders", response_model=Order)
-async def create_order(order: OrderCreate):
+async def create_order(
+    order: OrderCreate,
+    current_user: Optional[dict] = Depends(get_optional_current_user)
+):
     """
     Create a new order with product snapshots.
     
     Product details (name, image, price) are snapshot at the time of purchase
     to preserve historical accuracy and eliminate N+1 query problems.
+    
+    If user is logged in, the order is linked to their account.
     """
     # Fetch product details for each item and create snapshots
     order_items = []
@@ -620,6 +625,7 @@ async def create_order(order: OrderCreate):
         customer_name=order.customer_name,
         customer_email=order.customer_email,
         customer_phone=order.customer_phone,
+        user_id=current_user["id"] if current_user else None,
         items=order_items,
         total=order.total,
         payment_method=order.payment_method
@@ -631,7 +637,8 @@ async def create_order(order: OrderCreate):
     doc['items'] = [item.model_dump() for item in order_items]
     
     await db.orders.insert_one(doc)
-    logger.info(f"Order created: {order_obj.id} for {order.customer_email}")
+    logger.info(f"Order created: {order_obj.id} for {order.customer_email}" + 
+                (f" (user: {current_user['id']})" if current_user else " (guest)"))
     
     return order_obj
 
