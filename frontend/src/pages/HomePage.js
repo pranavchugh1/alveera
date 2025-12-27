@@ -264,6 +264,7 @@ export default function HomePage() {
                 <img
                   src={img}
                   alt={`Instagram ${index + 1}`}
+                  loading="lazy"
                   className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
                 />
               </div>
