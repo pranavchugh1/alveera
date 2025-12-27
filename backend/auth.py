@@ -135,3 +135,39 @@ async def get_current_admin_user(
         raise credentials_exception
     
     return {"email": token_data.email, "admin_id": token_data.admin_id}
+
+
+# =============================================================================
+# Customer User Token Utilities
+# =============================================================================
+
+def decode_user_token(token: str) -> Optional[UserTokenData]:
+    """Decode JWT token for customer users."""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        user_id: str = payload.get("user_id")
+        # Ensure this is a user token, not admin token
+        if email is None or user_id is None:
+            return None
+        # Check if it's explicitly a user token
+        if payload.get("type") != "user":
+            return None
+        return UserTokenData(email=email, user_id=user_id)
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
+
+
+def create_user_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Create JWT token for customer users with type identifier."""
+    to_encode = data.copy()
+    to_encode["type"] = "user"  # Mark as user token
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
