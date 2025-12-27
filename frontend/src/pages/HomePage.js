@@ -39,8 +39,10 @@ export default function HomePage() {
 
   const fetchFeaturedProducts = async () => {
     try {
-      const response = await axios.get(`${API}/products?category=new-arrivals`);
-      setFeaturedProducts(response.data.slice(0, 4));
+      const response = await axios.get(`${API}/products?category=new-arrivals&limit=4`);
+      // Handle paginated response format
+      const products = response.data.products || response.data;
+      setFeaturedProducts(Array.isArray(products) ? products.slice(0, 4) : []);
     } catch (error) {
       console.error('Error fetching products:', error);
     }
