@@ -19,7 +19,10 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 # Security scheme
 security = HTTPBearer()
 
-# Models
+# =============================================================================
+# Admin Models
+# =============================================================================
+
 class AdminUser(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: EmailStr
@@ -45,6 +48,43 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: Optional[str] = None
     admin_id: Optional[str] = None
+
+# =============================================================================
+# Customer User Models
+# =============================================================================
+
+class User(BaseModel):
+    """Customer user model for authentication."""
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: EmailStr
+    hashed_password: str
+    full_name: str
+    phone: str = ""
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class UserCreate(BaseModel):
+    """Model for user registration."""
+    email: EmailStr
+    password: str
+    full_name: str
+    phone: str = ""
+
+class UserLogin(BaseModel):
+    """Model for user login."""
+    email: EmailStr
+    password: str
+
+class UserToken(BaseModel):
+    """Token response for customer users."""
+    access_token: str
+    token_type: str = "bearer"
+    user: dict
+
+class UserTokenData(BaseModel):
+    """Decoded token data for customers."""
+    email: Optional[str] = None
+    user_id: Optional[str] = None
 
 # Password utilities
 def verify_password(plain_password: str, hashed_password: str) -> bool:
