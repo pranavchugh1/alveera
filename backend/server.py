@@ -64,6 +64,7 @@ async def create_indexes():
     - Products: category, price, unique design_no
     - Orders: compound index on (created_at desc, status) for dashboard sorting
     - Admins: unique email for fast authentication lookups
+    - Users: unique email for customer authentication
     """
     try:
         # Products indexes
@@ -77,11 +78,16 @@ async def create_indexes():
         await db.orders.create_index([("created_at", -1), ("status", 1)])
         await db.orders.create_index("status")  # For filtering
         await db.orders.create_index("customer_email")  # For customer lookup
+        await db.orders.create_index("user_id")  # For user order history
         logger.info("Orders indexes created successfully")
         
         # Admins indexes
         await db.admins.create_index("email", unique=True)
         logger.info("Admins indexes created successfully")
+        
+        # Users indexes (customer accounts)
+        await db.users.create_index("email", unique=True)
+        logger.info("Users indexes created successfully")
         
         logger.info("All database indexes created/verified successfully")
     except Exception as e:
