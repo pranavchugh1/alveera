@@ -217,6 +217,63 @@ async def get_current_admin(
     
     return admin
 
+
+# =============================================================================
+# Customer User Auth Dependency
+# =============================================================================
+
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+) -> dict:
+    """Dependency to validate JWT token and get current customer user."""
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    token = credentials.credentials
+    token_data = decode_user_token(token)
+    
+    if token_data is None:
+        raise credentials_exception
+    
+    # Verify user exists in database
+    user = await db.users.find_one({"email": token_data.email}, {"_id": 0, "hashed_password": 0})
+    if user is None:
+        raise credentials_exception
+    
+    if not user.get("is_active", True):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is disabled"
+        )
+    
+    return user
+
+
+async def get_optional_current_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(optional_security)
+) -> Optional[dict]:
+    """Optional dependency - returns user if authenticated, None otherwise."""
+    if credentials is None:
+        return None
+    
+    try:
+        token = credentials.credentials
+        token_data = decode_user_token(token)
+        
+        if token_data is None:
+            return None
+        
+        user = await db.users.find_one({"email": token_data.email}, {"_id": 0, "hashed_password": 0})
+        if user is None or not user.get("is_active", True):
+            return None
+        
+        return user
+    except Exception:
+        return None
+
 # =============================================================================
 # Auth Routes
 # =============================================================================
