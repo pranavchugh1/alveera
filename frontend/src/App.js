@@ -1,30 +1,43 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
-import HomePage from "@/pages/HomePage";
-import ProductsPage from "@/pages/ProductsPage";
-import ProductDetailPage from "@/pages/ProductDetailPage";
-import CartPage from "@/pages/CartPage";
-import CheckoutPage from "@/pages/CheckoutPage";
-import OrderConfirmationPage from "@/pages/OrderConfirmationPage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { AdminProvider } from "@/context/AdminContext";
 import { AuthProvider } from "@/context/AuthContext";
 
+// Lazy-loaded pages for code splitting - reduces initial bundle size
+// Each page is loaded only when the user navigates to that route
+const HomePage = lazy(() => import("@/pages/HomePage"));
+const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
+const ProductDetailPage = lazy(() => import("@/pages/ProductDetailPage"));
+const CartPage = lazy(() => import("@/pages/CartPage"));
+const CheckoutPage = lazy(() => import("@/pages/CheckoutPage"));
+const OrderConfirmationPage = lazy(() => import("@/pages/OrderConfirmationPage"));
+
 // Customer Auth Pages
-import LoginPage from "@/pages/LoginPage";
-import SignupPage from "@/pages/SignupPage";
-import MyOrdersPage from "@/pages/MyOrdersPage";
+const LoginPage = lazy(() => import("@/pages/LoginPage"));
+const SignupPage = lazy(() => import("@/pages/SignupPage"));
+const MyOrdersPage = lazy(() => import("@/pages/MyOrdersPage"));
 
 // Admin Pages
-import AdminLogin from "@/pages/AdminLogin";
-import AdminDashboard from "@/pages/AdminDashboard";
-import AdminProducts from "@/pages/AdminProducts";
-import AdminOrders from "@/pages/AdminOrders";
-import { AdminLayout } from "@/components/AdminLayout";
+const AdminLogin = lazy(() => import("@/pages/AdminLogin"));
+const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
+const AdminProducts = lazy(() => import("@/pages/AdminProducts"));
+const AdminOrders = lazy(() => import("@/pages/AdminOrders"));
+const AdminLayout = lazy(() => import("@/components/AdminLayout").then(module => ({ default: module.AdminLayout })));
+
+// Loading spinner component for Suspense fallback
+const LoadingSpinner = () => (
+  <div className="min-h-screen flex items-center justify-center bg-[#F9F5F0]">
+    <div className="text-center">
+      <div className="inline-block w-12 h-12 border-4 border-[#C5A059] border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p className="text-gray-600 font-serif">Loading...</p>
+    </div>
+  </div>
+);
 
 function App() {
   return (
