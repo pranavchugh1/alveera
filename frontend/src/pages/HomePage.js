@@ -167,6 +167,7 @@ export default function HomePage() {
                     <img
                       src={collection.image}
                       alt={collection.name}
+                      loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all" />
